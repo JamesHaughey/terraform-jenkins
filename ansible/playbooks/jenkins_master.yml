@@ -1,0 +1,45 @@
+---
+  - name: Configure Jenkins Master image
+    hosts: all
+    become_method: sudo
+    become_user: root
+    become: yes
+    vars:
+      user: ubuntu
+      root_pkgs:
+        - curl
+        - git
+        - zsh
+
+    tasks:
+      - name: Add jenkins key
+        apt_key:
+          url: https://pkg.jenkins.io/debian-stable/jenkins.io.key
+          state: present
+        notify: Add Jenkins Repository
+
+      - name: Install packages
+        apt:
+          pkg:
+            - wget
+            - openjdk-8-jre
+            - curl
+            - git
+            - zip
+          update_cache: yes
+          cache_valid_time: 3600
+          state: latest
+        notify: Install Jenkins
+      
+    handlers:
+      - name: Add Jenkins Repository
+        lineinfile:
+          path: /etc/apt/sources.list
+          line: deb https://pkg.jenkins.io/debian-stable binary/
+        notify: Install Jenkins
+
+      - name: Install Jenkins
+        apt:
+          name: jenkins
+          update_cache: yes
+          state: latest
