@@ -1,0 +1,7 @@
+Jenkins server Todo list:
+    ☐ https://www.digitalocean.com/community/tutorials/how-to-install-jenkins-on-ubuntu-18-04
+    ☐ https://www.digitalocean.com/community/tutorials/how-to-configure-jenkins-with-ssl-using-an-nginx-reverse-proxy-on-ubuntu-18-04
+    ☐ enable jenkins service (may already be done)
+    ☐ set up ufw firewall rules
+    ☐ Extract Jenkins administrator password
+    ☐ 
