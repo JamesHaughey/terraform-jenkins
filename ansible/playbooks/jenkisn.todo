@@ -4,4 +4,4 @@ Jenkins server Todo list:
     ☐ enable jenkins service (may already be done)
     ☐ set up ufw firewall rules
     ☐ Extract Jenkins administrator password
-    ☐ 
+    ☐ Add Jenkins to sudoers file - jenkins ALL=(ALL) NOPASSWD: ALL -> /etc/sudoers.tmp

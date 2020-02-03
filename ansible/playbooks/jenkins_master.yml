@@ -43,3 +43,9 @@
           name: jenkins
           update_cache: yes
           state: latest
+        notify: Update suoders
+
+      - name: Update suoders
+        lineinfile:
+          path: /etc/sudoers.tmp
+          line: "jenkins ALL=(ALL) NOPASSWD: ALL"
