@@ -8,7 +8,7 @@ terraform {
     key = "workspaces/ubuntu-jenkins/terraform.tfstate"
 
     region  = "eu-west-1"
-    profile = "terraform_emr"
+    profile = "terraform_linux"
 
     bucket         = "jhaugh-terraform-tfstate"
     dynamodb_table = "jhaugh-terraform-locking"
@@ -21,7 +21,7 @@ locals {
   key_name     = "linux_desktop_euwst1"
 }
 
-data "aws_ami" "ubuntu_jenkins" {
+data "aws_ami" "jenkins_master" {
   most_recent = true
   filter {
     name   = "name"
@@ -30,13 +30,22 @@ data "aws_ami" "ubuntu_jenkins" {
   owners = ["587678272550"]
 }
 
-resource "aws_security_group" "ubuntu_jenkins" {
+data "aws_ami" "jenkins_slave" {
+  most_recent = true
+  filter {
+    name   = "name"
+    values = ["jenkins-slave-*"]
+  }
+  owners = ["587678272550"]
+}
+
+resource "aws_security_group" "jenkins" {
   name = local.project_name
 }
 
-resource "aws_security_group_rule" "ubuntu_jenkins_ssh" {
+resource "aws_security_group_rule" "jenkins_ssh" {
   type              = "ingress"
-  security_group_id = aws_security_group.ubuntu_jenkins.id
+  security_group_id = aws_security_group.jenkins.id
 
   from_port   = 22
   to_port     = 22
@@ -44,9 +53,9 @@ resource "aws_security_group_rule" "ubuntu_jenkins_ssh" {
   cidr_blocks = ["0.0.0.0/0"]
 }
 
-resource "aws_security_group_rule" "ubuntu_jenkins_http" {
+resource "aws_security_group_rule" "jenkins_http" {
   type              = "ingress"
-  security_group_id = aws_security_group.ubuntu_jenkins.id
+  security_group_id = aws_security_group.jenkins.id
 
   from_port   = 8080
   to_port     = 8080
@@ -54,9 +63,9 @@ resource "aws_security_group_rule" "ubuntu_jenkins_http" {
   cidr_blocks = ["0.0.0.0/0"]
 }
 
-resource "aws_security_group_rule" "ubuntu-remote_egress" {
+resource "aws_security_group_rule" "jenkins_egress" {
   type              = "egress"
-  security_group_id = aws_security_group.ubuntu_jenkins.id
+  security_group_id = aws_security_group.jenkins.id
 
   from_port   = 0
   to_port     = 0
@@ -64,24 +73,40 @@ resource "aws_security_group_rule" "ubuntu-remote_egress" {
   cidr_blocks = ["0.0.0.0/0"]
 }
 
-resource "aws_instance" "ubuntu_jenkins" {
-  ami                    = data.aws_ami.ubuntu_jenkins.id
+resource "aws_instance" "jenkins_master" {
+  ami                    = data.aws_ami.jenkins_master.id
   instance_type          = "t2.medium"
   key_name               = local.key_name
-  vpc_security_group_ids = [aws_security_group.ubuntu_jenkins.id]
+  vpc_security_group_ids = [aws_security_group.jenkins.id]
 
   tags = {
-    Name      = "ubuntu-jenkins"
+    Name      = "jenkins-master"
+    CreatedBy = "Terraform"
+  }
+}
+
+resource "aws_instance" "jenkins_slave" {
+  ami                    = data.aws_ami.jenkins_slave.id
+  instance_type          = "t2.medium"
+  key_name               = local.key_name
+  vpc_security_group_ids = [aws_security_group.jenkins.id]
+
+  tags = {
+    Name      = "jenkins-slave"
     CreatedBy = "Terraform"
   }
 }
 
 output "ip" {
-  value = aws_instance.ubuntu_jenkins.public_ip
+  value = aws_instance.jenkins_master.public_ip
 }
 
 output "ami_name" {
-  value = data.aws_ami.ubuntu_jenkins.name
+  value = data.aws_ami.jenkins_master.name
+}
+
+output "slave_ip" {
+  value = aws_instance.jenkins_slave.public_ip
 }
 
 output "key_name" {
