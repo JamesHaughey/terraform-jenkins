@@ -1,0 +1,33 @@
+{
+    "variables" : {
+        "region" : "eu-west-1",
+        "source_ami" : "ami-02df9ea15c1778c9c"
+    },
+    "builders" : [
+        {
+            "type" : "amazon-ebs",
+            "profile" : "terraform_linux",
+            "region" : "{{user `region`}}",
+            "instance_type" : "t3.medium",
+            "source_ami" : "{{user `source_ami`}}",
+            "ssh_username" : "ubuntu",
+            "ami_name" : "jenkins-slave-{{user `version`}}",
+            "ami_description" : "Ubuntu Linux Image for Jenkins Slave",
+            "run_tags" : {
+                "Name" : "Packer Builder",
+                "CreatedBy" : "Packer"
+            },
+            "tags" : {
+                "Project" : "Jenkins",
+                "Tool" : "Packer",
+                "Author" : "JamesHaughey"
+            }
+        }
+    ],
+    "provisioners" : [
+        {
+            "type" : "ansible",
+            "playbook_file" : "../../ansible/playbooks/jenkins_slave.yml"
+        }
+    ]
+}

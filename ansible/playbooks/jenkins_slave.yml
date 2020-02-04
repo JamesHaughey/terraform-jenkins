@@ -1,0 +1,47 @@
+---
+  - name: Configure Jenkins Master image
+    hosts: all
+    become_method: sudo
+    become_user: root
+    become: yes
+    vars:
+      user: ubuntu
+      root_pkgs:
+        - curl
+        - git
+        - zsh
+
+    tasks:
+      - name: Create jenkins user
+        user:
+          name: jenkins
+          state: present
+        notify: 
+          - Create jenkins_slave folder
+
+      - name: Install packages
+        apt:
+          pkg:
+            - wget
+            - openjdk-8-jre
+            - curl
+            - git
+            - zip
+          update_cache: yes
+          cache_valid_time: 3600
+          state: latest
+        notify: Create jenkins_slave folder
+
+      - name: Upgrade packages
+        apt:
+          update_cache: yes
+          upgrade: yes
+          cache_valid_time: 3600
+          state: latest
+      
+    handlers:
+      - name: Create jenkins_slave folder
+        file:
+          path: /home/jenkins/jenkins_slave
+          state: directory
+          mode: '0755'
