@@ -31,6 +31,13 @@
           state: latest
         notify: Install Jenkins
       
+      - name: Upgrade packages
+        apt:
+          update_cache: yes
+          upgrade: yes
+          cache_valid_time: 3600
+          state: latest
+      
     handlers:
       - name: Add Jenkins Repository
         lineinfile:
@@ -43,9 +50,9 @@
           name: jenkins
           update_cache: yes
           state: latest
-        notify: Update suoders
+        # notify: Update suoders
 
-      - name: Update suoders
-        lineinfile:
-          path: /etc/sudoers.tmp
-          line: "jenkins ALL=(ALL) NOPASSWD: ALL"
+      # - name: Update suoders
+      #   lineinfile:
+      #     path: /etc/sudoers.tmp
+      #     line: "jenkins ALL=(ALL) NOPASSWD: ALL"
