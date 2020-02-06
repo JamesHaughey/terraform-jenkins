@@ -114,7 +114,7 @@ output "slave_ip" {
 }
 
 output "key_name" {
-  value = local.key_name
+  value = var.key_name
 }
 
 output "project_name" {
