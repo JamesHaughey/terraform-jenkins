@@ -18,6 +18,7 @@
           state: present
         notify: 
           - Create jenkins_slave folder
+          - Authorize jenkins user
 
       - name: Install packages
         apt:
@@ -44,4 +45,11 @@
         file:
           path: /home/jenkins/jenkins_slave
           state: directory
+          owner: jenkins
           mode: '0755'
+      
+      - name : Authorize jenkins user
+        authorized_key:
+          user: jenkins
+          state: present
+          key: "{{ lookup('file', 'files/id_rsa.pub') }}"
