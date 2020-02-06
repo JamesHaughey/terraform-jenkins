@@ -1,0 +1,10 @@
+Jenkins Pipeline Todo:
+    ☐ List of Python packages to maintain
+    ☐ List of Python Archicture to support
+    ☐ List of Python Versions to support
+    
+    ☐ Script to loop by Architecture / Version / Package
+    ☐ pip download latest package
+    ☐ Use regex detection - exceptions for packages with annoying names
+    ☐ Move files to correct location
+    ☐ Update index

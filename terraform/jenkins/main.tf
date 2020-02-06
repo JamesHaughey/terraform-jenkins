@@ -18,7 +18,11 @@ terraform {
 
 locals {
   project_name = "ubuntu_jenkins"
-  key_name     = "linux_desktop_euwst1"
+}
+
+variable "key_name" {
+  description = "Local key name to be provided by TF_VAR_key_name"
+  type = string
 }
 
 data "aws_ami" "jenkins_master" {
@@ -76,7 +80,7 @@ resource "aws_security_group_rule" "jenkins_egress" {
 resource "aws_instance" "jenkins_master" {
   ami                    = data.aws_ami.jenkins_master.id
   instance_type          = "t2.medium"
-  key_name               = local.key_name
+  key_name               = var.key_name
   vpc_security_group_ids = [aws_security_group.jenkins.id]
 
   tags = {
@@ -88,7 +92,7 @@ resource "aws_instance" "jenkins_master" {
 resource "aws_instance" "jenkins_slave" {
   ami                    = data.aws_ami.jenkins_slave.id
   instance_type          = "t2.medium"
-  key_name               = local.key_name
+  key_name               = var.key_name
   vpc_security_group_ids = [aws_security_group.jenkins.id]
 
   tags = {
